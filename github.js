@@ -420,7 +420,7 @@
             "encoding": "utf-8"
           };
         } else {
-          	content = {
+            content = {
               "content": btoa(String.fromCharCode.apply(null, new Uint8Array(content))),
               "encoding": "base64"
             };
@@ -474,6 +474,26 @@
           if (err) return cb(err);
           cb(null, res.sha);
         });
+      };
+
+      this.commitBlobs = function (baseTree, paths, contents, message, cb) {
+        var repo = this,
+          shas = [],
+          i, cl = i = contents.length;
+
+        while (i--) {
+          repo.postBlob(contents.pop, function (err, sha) {
+            shas.push(sha);
+            if (shas.length === cl) {
+              repo.updateTree(baseTree, paths, shas, function (err, treeSha) {
+                repo.commit(currentTree.sha, treeSha, message, cb);
+              });
+            }
+          });
+        }
+
+        function 
+
       };
 
       // Create a new commit object with the current commit SHA as the parent
