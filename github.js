@@ -476,23 +476,38 @@
         });
       };
 
-      this.commitBlobs = function (baseTree, paths, contents, message, cb) {
-        var repo = this,
-          shas = [],
-          i, cl = i = contents.length;
+      this.commitBlobs = function (branch, paths, contents, message, cb) {
+        var repo = this;
 
-        while (i--) {
-          repo.postBlob(contents.pop, function (err, sha) {
-            shas.push(sha);
-            if (shas.length === cl) {
-              repo.updateTree(baseTree, paths, shas, function (err, treeSha) {
-                repo.commit(currentTree.sha, treeSha, message, cb);
-              });
-            }
+        updateTree(branch, function (err, latestCommit) {
+
+          repo.getCommit(branch, latestCommit, function (err, commit) {
+
+            var shaPaths = [], shas = [],
+              i, cl = i = contents.length,
+
+              currentTreeSha = commit.tree.sha;
+
+            while (i--) {
+              repo.postBlob(contents.pop(), (function (path, err, sha) {
+                
+                shas.push(sha);
+                shaPaths.push(path);
+
+                if (shas.length === cl) {
+                  repo.updateTree(currentTreeSha, shaPaths, shas, function (err, treeSha) {
+                    repo.commit(latestCommit, treeSha, message, function (err, commitSha) {
+                      repo.updateHead(branch, commitSha, cb);
+                    });
+                  });
+                }
+              }).bind(null, paths.pop()));
+            }      
+
           });
-        }
 
-        function 
+        });
+
 
       };
 
