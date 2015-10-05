@@ -435,17 +435,29 @@
       // Update an existing tree adding a new blob object getting a tree SHA back
       // -------
 
-      this.updateTree = function(baseTree, path, blob, cb) {
+      this.updateTree = function(baseTree, paths, blobs, cb) {
+
+        var items = [];
+
+        if ( !paths.map ) {
+          paths = [paths];
+        }
+        if ( !blobs.map ) {
+          blobs = [blobs];
+        }
+
+        paths.map(function (path, i, a) {
+          items[i] = {
+            path: path,
+            mode: '100644',
+            type: 'blob',
+            sha: blobs[i]
+          };
+        });
+
         var data = {
           "base_tree": baseTree,
-          "tree": [
-            {
-              "path": path,
-              "mode": "100644",
-              "type": "blob",
-              "sha": blob
-            }
-          ]
+          "tree": items
         };
         _request("POST", repoPath + "/git/trees", data, function(err, res) {
           if (err) return cb(err);
