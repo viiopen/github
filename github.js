@@ -349,6 +349,17 @@
         });
       };
 
+      // Merge pull request
+      // -------
+
+      this.mergePull = function(pullHead, number, message, cb) {
+        var merge = {
+          commit_message: message,
+          sha: pullHead
+        };
+        _request("PUT", repoPath + "/pulls/" + number + '/merge', merge, cb)
+      };}
+
       // Retrieve the changes made between base and head
       // -------
 
