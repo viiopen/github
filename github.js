@@ -587,7 +587,21 @@
       // -------
 
       this.fork = function(cb) {
-        _request("POST", repoPath + "/forks", null, cb);
+        _request("POST", repoPath + "/forks", cb);
+      };
+
+      // Pull from upstream
+
+      this.createUpstreamPullRequest = function(options, cb) {
+
+        options = {
+          title: options.title,
+          head: options.upstream + ':' + options.branch,
+          base: options.branch,
+          body: options.body
+        };
+
+        _request("POST", repoPath, "/pulls", options, cb);
       };
 
       // Branch repository
