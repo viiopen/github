@@ -358,7 +358,7 @@
           sha: pullHead
         };
         _request("PUT", repoPath + "/pulls/" + number + '/merge', merge, cb)
-      };}
+      };
 
       // Retrieve the changes made between base and head
       // -------
