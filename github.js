@@ -612,7 +612,7 @@
           body: options.body
         };
 
-        _request("POST", repoPath, "/pulls", options, cb);
+        _request("POST", repoPath + "/pulls", options, cb);
       };
 
       // Branch repository
