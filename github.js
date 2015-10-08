@@ -499,6 +499,10 @@
 
               currentTreeSha = commit.tree.sha;
 
+            function cbProxy (data, err, res) {
+              return cb(err, { data: data, res: res });
+            }
+
             while (i--) {
               repo.postBlob(contents.pop(), (function (path, err, sha) {
                 
@@ -508,7 +512,15 @@
                 if (shas.length === cl) {
                   repo.updateTree(currentTreeSha, shaPaths, shas, function (err, treeSha) {
                     repo.commit(latestCommit, treeSha, message, function (err, commitSha) {
-                      repo.updateHead(branch, commitSha, cb);
+
+                      var data = {
+                        shas: shas,
+                        shaPaths: shaPaths,
+                        treeSha: treeSha,
+                        commitSha: commitSha
+                      };
+
+                      repo.updateHead(branch, commitSha, cbProxy.bind(null, data));
                     });
                   });
                 }
