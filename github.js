@@ -610,7 +610,7 @@
       // -------
 
       this.fork = function(cb) {
-        _request("POST", repoPath + "/forks", cb);
+        _request("POST", repoPath + "/forks", null, cb);
       };
 
       // Pull from upstream
